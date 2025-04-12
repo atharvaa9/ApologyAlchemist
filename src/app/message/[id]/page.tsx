@@ -27,6 +27,7 @@ export default function MessagePage({ params }: MessagePageProps) {
         }
       } catch (err) {
         setError('Error loading message');
+        console.error('Error fetching message:', err);
       } finally {
         setLoading(false);
       }
@@ -36,11 +37,27 @@ export default function MessagePage({ params }: MessagePageProps) {
   }, [params.id]);
 
   if (loading) {
-    return <div className="container mx-auto p-4">Loading...</div>;
+    return (
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardContent className="p-4">
+            Loading message...
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4">Error: {error}</div>;
+    return (
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardContent className="p-4 text-red-500">
+            {error}
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

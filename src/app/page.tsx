@@ -199,122 +199,120 @@ export default function Home() {
   };
 
   return (
-    <ProtectedRoute>
-      <div className="container mx-auto p-4">
-        {/* <div className="flex justify-end mb-4">
-          {user && (
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <span>Logout</span>
-              {user.email && <span className="text-sm text-muted-foreground">({user.email})</span>}
-            </Button>
-          )}
-        </div> */}
+    <div className="container mx-auto p-4">
+      {/* <div className="flex justify-end mb-4">
+        {user && (
+          <Button 
+            variant="outline" 
+            onClick={handleLogout}
+            className="gap-2"
+          >
+            <span>Logout</span>
+            {user.email && <span className="text-sm text-muted-foreground">({user.email})</span>}
+          </Button>
+        )}
+      </div> */}
 
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Manual Message Input Section */}
-          <div className="w-full md:w-1/2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Compose Apology Manually</CardTitle>
-                <CardDescription>Write your apology message here.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <Textarea
-                  placeholder="Enter your apology message..."
-                  value={manualMessage}
-                  onChange={(e) => setManualMessage(e.target.value)}
-                />
-              </CardContent>
-            </Card>
-          </div>
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Manual Message Input Section */}
+        <div className="w-full md:w-1/2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Compose Apology Manually</CardTitle>
+              <CardDescription>Write your apology message here.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <Textarea
+                placeholder="Enter your apology message..."
+                value={manualMessage}
+                onChange={(e) => setManualMessage(e.target.value)}
+              />
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* AI Apology Generator Section */}
-          <div className="w-full md:w-1/2">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Apology Generator</CardTitle>
-                <CardDescription>Let AI help you craft the perfect apology.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <Input
-                  type="text"
-                  placeholder="Recipient"
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Your Name"
-                  value={senderName}
-                  onChange={(e) => setSenderName(e.target.value)}
-                />
-                <Textarea
-                  placeholder="Context: What happened and why are you apologizing?"
-                  value={aiContext}
-                  onChange={(e) => setAiContext(e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Tone (e.g., heartfelt, playful)"
-                  value={tone}
-                  onChange={(e) => setTone(e.target.value)}
-                />
-                <div className="flex gap-2">
-                  <Button onClick={handleAiGenerate} className="bg-primary text-primary-foreground hover:bg-primary/80">
-                    Generate with AI
-                  </Button>
-                  <Button onClick={handleToneAdjustment} variant="secondary">
-                    Adjust Tone
-                  </Button>
-                  <Button onClick={handleGetImprovementSuggestions} variant="secondary">
-                    Get Suggestions
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* AI Apology Generator Section */}
+        <div className="w-full md:w-1/2">
+          <Card>
+            <CardHeader>
+              <CardTitle>AI Apology Generator</CardTitle>
+              <CardDescription>Let AI help you craft the perfect apology.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <Input
+                type="text"
+                placeholder="Recipient"
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Your Name"
+                value={senderName}
+                onChange={(e) => setSenderName(e.target.value)}
+              />
+              <Textarea
+                placeholder="Context: What happened and why are you apologizing?"
+                value={aiContext}
+                onChange={(e) => setAiContext(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Tone (e.g., heartfelt, playful)"
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <Button onClick={handleAiGenerate} className="bg-primary text-primary-foreground hover:bg-primary/80">
+                  Generate with AI
+                </Button>
+                <Button onClick={handleToneAdjustment} variant="secondary">
+                  Adjust Tone
+                </Button>
+                <Button onClick={handleGetImprovementSuggestions} variant="secondary">
+                  Get Suggestions
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Message Display and Preview */}
-          <div className="w-full">
-            <Card>
-              <CardHeader>
-                <CardTitle>Message Preview</CardTitle>
-                <CardDescription>Preview and send your apology message.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <div className="p-4 rounded-md bg-secondary/50">
-                  {generatedMessage || manualMessage || "No message composed yet."}
-                </div>
-                <div className="flex gap-2">
-                 <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="outline" size="icon" onClick={handleCopyMessage} disabled={!generatedMessage}>
-                          <Copy className="h-4 w-4" />
-                          <span className="sr-only">Copy message</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Click to copy
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <Button onClick={() => setPreviewVisible(!previewVisible)} variant="secondary">
-                    {previewVisible ? "Hide Preview" : "Show Preview"}
-                  </Button>
-                  <Button onClick={handleSendMessage} className="bg-accent text-accent-foreground hover:bg-accent/80">
-                    Send Message
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Message Display and Preview */}
+        <div className="w-full">
+          <Card>
+            <CardHeader>
+              <CardTitle>Message Preview</CardTitle>
+              <CardDescription>Preview and send your apology message.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="p-4 rounded-md bg-secondary/50">
+                {generatedMessage || manualMessage || "No message composed yet."}
+              </div>
+              <div className="flex gap-2">
+               <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" onClick={handleCopyMessage} disabled={!generatedMessage}>
+                        <Copy className="h-4 w-4" />
+                        <span className="sr-only">Copy message</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Click to copy
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <Button onClick={() => setPreviewVisible(!previewVisible)} variant="secondary">
+                  {previewVisible ? "Hide Preview" : "Show Preview"}
+                </Button>
+                <Button onClick={handleSendMessage} className="bg-accent text-accent-foreground hover:bg-accent/80">
+                  Send Message
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </ProtectedRoute>
+    </div>
   );
 }
