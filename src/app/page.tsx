@@ -32,8 +32,9 @@ export default function Home() {
   const [senderName, setSenderName] = useState("");
   const [tone, setTone] = useState("heartfelt"); // Default tone
   const [previewVisible, setPreviewVisible] = useState(false);
-
   const { toast } = useToast();
+  const [shareableUrl, setShareableUrl] = useState<string | null>(null);
+  const [showOutput, setShowOutput] = useState(false);
 
   const handleAiGenerate = async () => {
     if (!aiContext || !recipient || !senderName) {
@@ -130,39 +131,42 @@ export default function Home() {
     if (!recipient || (!manualMessage && !generatedMessage)) {
       toast({
         title: "Missing Information",
-        description: "Please provide a recipient and either a manual or generated message.",
+        description: "Please provide a recipient and a message.",
+        variant: "destructive"
       });
       return;
     }
 
-    const messageContent = manualMessage || generatedMessage;
-
     try {
-      // Store the message in Firestore
+      const messageContent = manualMessage || generatedMessage;
+      
       const docRef = await addDoc(collection(db, 'messages'), {
         content: messageContent,
         recipient,
         createdAt: new Date().toISOString(),
         senderName,
-        userId: user?.uid || 'anonymous'
+        userId: 'anonymous'
       });
 
       // Generate shareable URL
-      const shareableUrl = `${window.location.origin}/message/${docRef.id}`;
+      const url = `${window.location.origin}/message/${docRef.id}`;
+      setShareableUrl(url);
+      setShowOutput(true);
 
-      // Copy URL to clipboard
-      await navigator.clipboard.writeText(shareableUrl);
-      
-      toast({
-        title: "Message Ready!",
-        description: `Link copied to clipboard! Share it with ${recipient}`,
-      });
+      // Scroll to output section
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+
     } catch (error: any) {
       console.error("Error creating message:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create shareable message. Please try again.",
+        description: error.message || "Failed to create message. Please try again.",
       });
     }
   };
@@ -199,7 +203,7 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 space-y-8">
       {/* <div className="flex justify-end mb-4">
         {user && (
           <Button 
@@ -313,6 +317,69 @@ export default function Home() {
           </Card>
         </div>
       </div>
+
+      {showOutput && shareableUrl && (
+        <Card className="mt-8 bg-slate-50">
+          <CardHeader>
+            <CardTitle className="text-xl">Message Ready! 🎉</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-white p-4 rounded-lg border">
+              <p className="text-sm text-muted-foreground mb-2">
+                Copy this link and send it to {recipient}:
+              </p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={shareableUrl}
+                  className="flex-1 p-2 rounded border bg-background text-sm font-mono"
+                />
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(shareableUrl);
+                      toast({
+                        title: "Copied!",
+                        description: "Link copied to clipboard",
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Copy failed",
+                        description: "Please copy the link manually",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+                >
+                  Copy Link
+                </button>
+              </div>
+            </div>
+            
+            <div className="text-sm text-muted-foreground">
+              <h3 className="font-medium text-foreground mb-2">Next steps:</h3>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Copy the link above</li>
+                <li>Send it to {recipient}</li>
+                <li>They can view your message by opening the link</li>
+              </ol>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowOutput(false);
+                setShareableUrl(null);
+                // Reset other form fields if needed
+              }}
+              className="w-full mt-4 px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/90"
+            >
+              Create Another Message
+            </button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
